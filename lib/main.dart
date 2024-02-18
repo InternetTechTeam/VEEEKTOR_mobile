@@ -5,7 +5,6 @@ import 'package:veeektor/application/services/authefication_service.dart';
 import 'package:veeektor/screens/home_screen.dart';
 import 'package:veeektor/widgets/authorization_widget.dart';
 import 'package:veeektor/theme.dart';
-import 'package:veeektor/widgets/bottom_bar.dart';
 
 void main() {
   runApp(
