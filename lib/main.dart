@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:veeektor/application/bloc/authefication_bloc/authefication_bloc.dart';
 import 'package:veeektor/application/services/authefication_service.dart';
+import 'package:veeektor/application/models/progress_dialog.dart';
+import 'package:veeektor/screens/auth/sign_in_screen.dart';
 import 'package:veeektor/screens/home_screen.dart';
 import 'package:veeektor/widgets/authorization_widget.dart';
 import 'package:veeektor/theme.dart';
@@ -36,13 +38,31 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'VEEEKTOR',
       theme: appTheme,
-      home: BlocBuilder<AutheficationBloc, AutheficationState>(
-        builder: (context, state) {
-          if (state is NotAutheficatedState) {
-            return const AuthorizationWidget();
+      home: BlocListener<AutheficationBloc, AutheficationState>(
+        listenWhen: (previous, current) => previous.status != current.status,
+        listener: (context, state) {
+          if (state.status == AutheficationStatus.loading) {
+            LoadingIndicatorDialog.show(context);
+          } else {
+            LoadingIndicatorDialog.dismiss();
           }
-          return const HomeScreen();
         },
+        child: BlocBuilder<AutheficationBloc, AutheficationState>(
+          builder: (context, state) {
+            switch (state.status) {
+              case AutheficationStatus.notAutheficated:
+                return AuthorizationWidget();
+              case AutheficationStatus.autheficated:
+                return HomeScreen();
+              default:
+                return Scaffold(
+                  body: Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                );
+            }
+          },
+        ),
       ),
     );
   }

@@ -1,4 +1,5 @@
 import 'package:bloc/bloc.dart';
+import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 import 'package:veeektor/application/bloc/authefication_bloc/authefication_bloc.dart';
 import 'package:veeektor/application/services/authefication_service.dart';
@@ -9,44 +10,41 @@ part 'auth_page_state.dart';
 class AuthPageBloc extends Bloc<AuthPageEvent, AuthPageState> {
   final AutheficationBloc _autheficationBloc;
   final AutheficationService _autheficationService;
-  AuthPageState previousState = AuthPageState.intiial();
 
-  AuthPageBloc({
-    required AutheficationBloc autheficationBloc, 
-    required AutheficationService autheficationService})
+  AuthPageBloc(
+      {required AutheficationBloc autheficationBloc,
+      required AutheficationService autheficationService})
       : _autheficationBloc = autheficationBloc,
-      _autheficationService = autheficationService,
-        super(AuthPageInitial()) {
+        _autheficationService = autheficationService,
+        super(AuthPageState.initial()) {
     on<_SignInEvent>(_signIn);
     on<_SignUpEvent>(_signUp);
     on<_ShowSignInScreenEvent>(_showSignInScreen);
     on<_ShowSignUpScreenEvent>(_showSignUpScreen);
-    on<_AddPreviousStateEvent>(_addPreviousState);
   }
 
   Future _signIn(_SignInEvent event, Emitter<AuthPageState> emit) async {
-    _autheficationBloc.add(AutheficationEvent.authorized());
-    emit(AuthPageState.signIn());
+    emit(state.copyWith(state: AuthState.loading));
+    await Future.delayed(Duration(seconds: 3));
+    //_autheficationBloc.add(AutheficationEvent.authorized());
+    emit(state.copyWith(state: AuthState.failure));
   }
 
   Future _signUp(_SignUpEvent event, Emitter<AuthPageState> emit) async {
+    emit(state.copyWith(state: AuthState.loading));
+    await Future.delayed(Duration(seconds: 3)); 
     _autheficationBloc.add(AutheficationEvent.authorized());
-    emit(AuthPageState.signIn());
+
+    emit(state.copyWith(state: AuthState.nun, activePage: AuthPage.signIn));
   }
 
   Future _showSignInScreen(
       _ShowSignInScreenEvent event, Emitter<AuthPageState> emit) async {
-    emit(AuthPageState.signIn());
-    previousState = AuthPageState.signIn();
+    emit(state.copyWith(activePage: AuthPage.signIn));
   }
 
   Future _showSignUpScreen(
       _ShowSignUpScreenEvent event, Emitter<AuthPageState> emit) async {
-    emit(AuthPageState.signUp());
-    previousState = AuthPageState.signUp();
-  }
-
-  Future _addPreviousState(_AddPreviousStateEvent event, Emitter<AuthPageState> emit) async {
-    emit(previousState);
+    emit(state.copyWith(activePage: AuthPage.signUp));
   }
 }

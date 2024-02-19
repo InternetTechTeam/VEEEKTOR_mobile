@@ -55,9 +55,19 @@ class SignUpForm extends StatefulWidget {
 class _SignUpFormState extends State<SignUpForm> {
   final _nameController = TextEditingController();
   final _surnameController = TextEditingController();
-  final _fathername = TextEditingController();
+  final _fathernameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _fathernameController.dispose();
+    _nameController.dispose();
+    _passwordController.dispose();
+    _surnameController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -78,7 +88,7 @@ class _SignUpFormState extends State<SignUpForm> {
           ),
           Padding(padding: EdgeInsets.only(top: 5)),
           TextInputWidget(
-            controller: _fathername,
+            controller: _fathernameController,
             label: "fathername",
             obscureText: false,
           ),

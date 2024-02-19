@@ -19,15 +19,19 @@ class AutheficationBloc extends Bloc<AutheficationEvent, AutheficationState> {
 
   Future _initialize(
       _InitializeEvent event, Emitter<AutheficationState> emit) async {
-        emit(AutheficationState.notAutheficated());
-      }
+    emit(state.copyWith(status: AutheficationStatus.loading));
+    await Future.delayed(Duration(seconds: 3));
+    emit(state.copyWith(status: AutheficationStatus.notAutheficated));
+  }
 
   Future _authorized(
       _AuthorizedEvent event, Emitter<AutheficationState> emit) async {
-    emit(AutheficationState.autheficated());
+    emit(state.copyWith(status: AutheficationStatus.autheficated));
   }
 
   Future _logOut(_LogOutEvent event, Emitter<AutheficationState> emit) async {
-    emit(AutheficationState.notAutheficated());
+    emit(state.copyWith(status: AutheficationStatus.loading));
+    await Future.delayed(Duration(seconds: 2));
+    emit(state.copyWith(status: AutheficationStatus.notAutheficated));
   }
 }

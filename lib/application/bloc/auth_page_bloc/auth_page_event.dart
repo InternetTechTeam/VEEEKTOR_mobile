@@ -8,7 +8,6 @@ sealed class AuthPageEvent {
   factory AuthPageEvent.signUp() = _SignUpEvent;
   factory AuthPageEvent.showSignInScreen() = _ShowSignInScreenEvent;
   factory AuthPageEvent.showSignUpScreen() = _ShowSignUpScreenEvent;
-  factory AuthPageEvent.addPreviousState() = _AddPreviousStateEvent;
 }
 
 class _SignInEvent extends AuthPageEvent {}
@@ -18,5 +17,3 @@ class _SignUpEvent extends AuthPageEvent {}
 class _ShowSignInScreenEvent extends AuthPageEvent {}
 
 class _ShowSignUpScreenEvent extends AuthPageEvent {}
-
-class _AddPreviousStateEvent extends AuthPageEvent {}

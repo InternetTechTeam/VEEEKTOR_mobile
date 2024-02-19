@@ -1,20 +1,18 @@
 part of 'authefication_bloc.dart';
 
-@immutable
-sealed class AutheficationState {
-  const AutheficationState();
+class AutheficationState {
+  AutheficationState({required this.status});
 
-  factory AutheficationState.initial() = AutheficationInitialState;
-  factory AutheficationState.autheficated() =
-      AutheficatedState;
-  factory AutheficationState.notAutheficated() = NotAutheficatedState;
+  AutheficationStatus status;
+
+  factory AutheficationState.initial() =>
+      AutheficationState(status: AutheficationStatus.nun);
+
+  AutheficationState copyWith({AutheficationStatus? status}) =>
+      AutheficationState(status: status ?? this.status);
 
   @override
-  List<Object> get props => [];
+  List<Object> get props => [status];
 }
 
-final class AutheficationInitialState extends AutheficationState {}
-
-final class AutheficatedState extends AutheficationState {}
-
-final class NotAutheficatedState extends AutheficationState {}
+enum AutheficationStatus { autheficated, notAutheficated, loading, nun }

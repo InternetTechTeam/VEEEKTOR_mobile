@@ -5,6 +5,10 @@ import 'package:veeektor/application/bloc/authefication_bloc/authefication_bloc.
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
+  static Route<dynamic> route() {
+    return MaterialPageRoute(builder: (context) => HomeScreen());
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

@@ -1,26 +1,31 @@
 part of 'auth_page_bloc.dart';
 
-@immutable
-sealed class AuthPageState {
-  const AuthPageState();
+class AuthPageState {
+  AuthPageState({
+    required this.state,
+    required this.activePage,
+  });
 
-  factory AuthPageState.intiial() = AuthPageInitial;
-  factory AuthPageState.loading() = AuthPageLoadingState;
-  factory AuthPageState.signIn() = AuthPageSignInState;
-  factory AuthPageState.signUp() = AuthPageSignUpState;
-  factory AuthPageState.failure() = AuthPageFailureState;
+  AuthState state;
+  AuthPage activePage;
 
+  factory AuthPageState.initial() => AuthPageState(
+        activePage: AuthPage.signIn,
+        state: AuthState.nun,
+      );
 
-  @override
-  List<Object> get props => [];
+  AuthPageState copyWith({
+    AuthState? state,
+    AuthPage? activePage,
+  }) =>
+      AuthPageState(
+        state: state ?? this.state,
+        activePage: activePage ?? this.activePage,
+      );
+
+  List<Object> get props => [state, activePage];
 }
 
-final class AuthPageInitial extends AuthPageState {}
+enum AuthState { loading, failure, nun }
 
-final class AuthPageLoadingState extends AuthPageState {}
-
-final class AuthPageSignInState extends AuthPageState {}
-
-final class AuthPageSignUpState extends AuthPageState {}
-
-final class AuthPageFailureState extends AuthPageState {}
+enum AuthPage { signIn, signUp }
