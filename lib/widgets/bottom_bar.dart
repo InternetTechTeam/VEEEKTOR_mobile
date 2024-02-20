@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:veeektor/screens/account_screen.dart';
 import 'package:veeektor/screens/screens.dart';
 
 class BottomBar extends StatefulWidget {
@@ -12,6 +13,7 @@ class _BottomBarState extends State<BottomBar> {
   int _currIdx = 0;
   static final _pages = [
     const HomeScreen(),
+    const AccountScreen(),
   ];
 
   void _onTap(idx) {
@@ -29,6 +31,10 @@ class _BottomBarState extends State<BottomBar> {
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
             label: "home",
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.account_circle_outlined),
+            label: "account",
           ),
         ],
         currentIndex: _currIdx,

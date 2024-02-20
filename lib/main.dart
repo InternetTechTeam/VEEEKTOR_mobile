@@ -3,10 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:veeektor/application/bloc/authefication_bloc/authefication_bloc.dart';
 import 'package:veeektor/application/services/authefication_service.dart';
 import 'package:veeektor/application/models/progress_dialog.dart';
-import 'package:veeektor/screens/auth/sign_in_screen.dart';
-import 'package:veeektor/screens/home_screen.dart';
 import 'package:veeektor/widgets/authorization_widget.dart';
 import 'package:veeektor/theme.dart';
+import 'package:veeektor/widgets/bottom_bar.dart';
 
 void main() {
   runApp(
@@ -38,6 +37,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'VEEEKTOR',
       theme: appTheme,
+      debugShowCheckedModeBanner: false,
       home: BlocListener<AutheficationBloc, AutheficationState>(
         listenWhen: (previous, current) => previous.status != current.status,
         listener: (context, state) {
@@ -53,9 +53,9 @@ class MyApp extends StatelessWidget {
               case AutheficationStatus.notAutheficated:
                 return AuthorizationWidget();
               case AutheficationStatus.autheficated:
-                return HomeScreen();
+                return const BottomBar();
               default:
-                return Scaffold(
+                return const Scaffold(
                   body: Center(
                     child: CircularProgressIndicator(),
                   ),

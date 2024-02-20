@@ -27,7 +27,7 @@ class AuthPageBloc extends Bloc<AuthPageEvent, AuthPageState> {
     emit(state.copyWith(state: AuthState.loading));
     await Future.delayed(Duration(seconds: 3));
     //_autheficationBloc.add(AutheficationEvent.authorized());
-    emit(state.copyWith(state: AuthState.failure));
+    emit(state.copyWith(state: AuthState.failure, errorMessage: "email: ${event.email} password: ${event.password}"));
   }
 
   Future _signUp(_SignUpEvent event, Emitter<AuthPageState> emit) async {

@@ -8,11 +8,14 @@ import 'package:veeektor/screens/auth/sign_in_screen.dart';
 import 'package:veeektor/screens/auth/sign_up_screen.dart';
 
 class AuthorizationWidget extends StatelessWidget {
-  const AuthorizationWidget({super.key});
+  AuthorizationWidget({super.key});
 
   static Route<dynamic> route() => MaterialPageRoute(
-        builder: (context) => const AuthorizationWidget(),
+        builder: (context) => AuthorizationWidget(),
       );
+
+  final SignInScreen _signInScreen = SignInScreen();
+  final SignUpScreen _signUpScreen = SignUpScreen();
 
   @override
   Widget build(BuildContext context) {
@@ -35,17 +38,19 @@ class AuthorizationWidget extends StatelessWidget {
               if (state.state == AuthState.failure) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text("Error"),
+                    content: Text(state.errorMessage ?? "Something going wrong"),
                   ),
                 );
               }
             },
             child: BlocBuilder<AuthPageBloc, AuthPageState>(
               builder: (context, state) {
-                if (state.activePage == AuthPage.signIn)
-                  return const SignInScreen();
-                if (state.activePage == AuthPage.signUp)
-                  return const SignUpScreen();
+                if (state.activePage == AuthPage.signIn) {
+                  return _signInScreen;
+                }
+                if (state.activePage == AuthPage.signUp) {
+                  return _signUpScreen;
+                }
 
                 return const Center(
                   child: CircularProgressIndicator(),

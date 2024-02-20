@@ -4,7 +4,26 @@ import 'package:veeektor/application/bloc/auth_page_bloc/auth_page_bloc.dart';
 import 'package:veeektor/widgets/text_input_widget.dart';
 
 class SignUpScreen extends StatelessWidget {
-  const SignUpScreen({super.key});
+  late final TextEditingController _nameController;
+  late final TextEditingController _surnameController;
+  late final TextEditingController _fathernameController;
+  late final TextEditingController _emailController;
+  late final TextEditingController _passwordController;
+  late final SignUpForm _form;
+  SignUpScreen({super.key}) {
+    _nameController = TextEditingController();
+    _surnameController = TextEditingController();
+    _fathernameController = TextEditingController();
+    _emailController = TextEditingController();
+    _passwordController = TextEditingController();
+    _form = SignUpForm(
+      nameController: _nameController,
+      surnameController: _surnameController,
+      fathernameController: _fathernameController,
+      emailController: _emailController,
+      passwordController: _passwordController,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -18,11 +37,16 @@ class SignUpScreen extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          SignUpForm(),
+          _form,
           ElevatedButton(
             onPressed: () {
-              BlocProvider.of<AuthPageBloc>(context)
-                  .add(AuthPageEvent.signUp());
+              BlocProvider.of<AuthPageBloc>(context).add(AuthPageEvent.signUp(
+                email: _emailController.text,
+                password: _passwordController.text,
+                name: _nameController.text,
+                surname: _surnameController.text,
+                patronymic: _fathernameController.text,
+              ));
             },
             child: const Text("Sign up"),
           ),
@@ -34,6 +58,11 @@ class SignUpScreen extends StatelessWidget {
                 onPressed: () {
                   BlocProvider.of<AuthPageBloc>(context)
                       .add(AuthPageEvent.showSignInScreen());
+                  _emailController.clear();
+                  _fathernameController.clear();
+                  _nameController.clear();
+                  _passwordController.clear();
+                  _surnameController.clear();
                 },
                 child: Text("Sign In"),
               ),
@@ -46,29 +75,26 @@ class SignUpScreen extends StatelessWidget {
 }
 
 class SignUpForm extends StatefulWidget {
-  const SignUpForm({super.key});
+  const SignUpForm({
+    super.key,
+    required this.nameController,
+    required this.surnameController,
+    required this.fathernameController,
+    required this.emailController,
+    required this.passwordController,
+  });
+
+  final TextEditingController nameController;
+  final TextEditingController surnameController;
+  final TextEditingController fathernameController;
+  final TextEditingController emailController;
+  final TextEditingController passwordController;
 
   @override
   State<SignUpForm> createState() => _SignUpFormState();
 }
 
 class _SignUpFormState extends State<SignUpForm> {
-  final _nameController = TextEditingController();
-  final _surnameController = TextEditingController();
-  final _fathernameController = TextEditingController();
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
-
-  @override
-  void dispose() {
-    _emailController.dispose();
-    _fathernameController.dispose();
-    _nameController.dispose();
-    _passwordController.dispose();
-    _surnameController.dispose();
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Form(
@@ -76,31 +102,31 @@ class _SignUpFormState extends State<SignUpForm> {
         children: [
           const Text("Sign Up"),
           TextInputWidget(
-            controller: _nameController,
+            controller: widget.nameController,
             label: "name",
             obscureText: false,
           ),
           Padding(padding: EdgeInsets.only(top: 5)),
           TextInputWidget(
-            controller: _surnameController,
+            controller: widget.surnameController,
             label: "surname",
             obscureText: false,
           ),
           Padding(padding: EdgeInsets.only(top: 5)),
           TextInputWidget(
-            controller: _fathernameController,
+            controller: widget.fathernameController,
             label: "fathername",
             obscureText: false,
           ),
           Padding(padding: EdgeInsets.only(top: 5)),
           TextInputWidget(
-            controller: _emailController,
+            controller: widget.emailController,
             label: "email",
             obscureText: false,
           ),
           Padding(padding: EdgeInsets.only(top: 5)),
           TextInputWidget(
-            controller: _passwordController,
+            controller: widget.passwordController,
             label: "password",
             obscureText: true,
           ),
