@@ -1,46 +1,129 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:veeektor/application/bloc/auth_page_bloc/auth_page_bloc.dart';
+import 'package:veeektor/application/bloc/authefication_bloc/authefication_bloc.dart';
+import 'package:veeektor/application/models/progress_dialog.dart';
+import 'package:veeektor/screens/auth/sign_in_screen.dart';
 import 'package:veeektor/widgets/text_input_widget.dart';
 
 class SignUpScreen extends StatelessWidget {
-  late final TextEditingController _nameController;
-  late final TextEditingController _surnameController;
-  late final TextEditingController _fathernameController;
-  late final TextEditingController _emailController;
-  late final TextEditingController _passwordController;
-  late final SignUpForm _form;
-  SignUpScreen({super.key}) {
-    _nameController = TextEditingController();
-    _surnameController = TextEditingController();
-    _fathernameController = TextEditingController();
-    _emailController = TextEditingController();
-    _passwordController = TextEditingController();
-    _form = SignUpForm(
-      nameController: _nameController,
-      surnameController: _surnameController,
-      fathernameController: _fathernameController,
-      emailController: _emailController,
-      passwordController: _passwordController,
+  SignUpScreen({super.key}) {}
+
+  static Route<dynamic> route() =>
+      MaterialPageRoute(builder: (context) => SignUpScreen());
+
+  @override
+  Widget build(BuildContext context) {
+
+    return Scaffold(
+      body: BlocListener<AutheficationBloc, AutheficationState>(
+        listenWhen: (previous, current) => previous.status != current.status,
+        listener: (context, state) {
+          switch (state.status) {
+            case AutheficationStatus.loading:
+              LoadingIndicatorDialog.show(context);
+              break;
+            case AutheficationStatus.error:
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content:
+                      Text(state.errorMessage ?? "something going wrong..."),
+                ),
+              );
+              break;
+            default:
+              break;
+          }
+        },
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SignUpForm(),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text("Already have account?"),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pushAndRemoveUntil(
+                          SignInScreen.route(), (route) => false);
+                    },
+                    child: Text("Sign In"),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
     );
+  }
+}
+
+class SignUpForm extends StatefulWidget {
+  const SignUpForm({super.key});
+
+  @override
+  State<SignUpForm> createState() => _SignUpFormState();
+}
+
+class _SignUpFormState extends State<SignUpForm> {
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _surnameController = TextEditingController();
+  final TextEditingController _fathernameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _surnameController.dispose();
+    _fathernameController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    _onPressed() {
-      BlocProvider.of<AuthPageBloc>(context)
-          .add(AuthPageEvent.showSignInScreen());
-    }
-
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
+    return Form(
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          _form,
+          const Text("Sign Up"),
+          TextInputWidget(
+            controller: _nameController,
+            label: "name",
+            obscureText: false,
+          ),
+          Padding(padding: EdgeInsets.only(top: 5)),
+          TextInputWidget(
+            controller: _surnameController,
+            label: "surname",
+            obscureText: false,
+          ),
+          Padding(padding: EdgeInsets.only(top: 5)),
+          TextInputWidget(
+            controller: _fathernameController,
+            label: "fathername",
+            obscureText: false,
+          ),
+          Padding(padding: EdgeInsets.only(top: 5)),
+          TextInputWidget(
+            controller: _emailController,
+            label: "email",
+            obscureText: false,
+          ),
+          Padding(padding: EdgeInsets.only(top: 5)),
+          TextInputWidget(
+            controller: _passwordController,
+            label: "password",
+            obscureText: true,
+          ),
           ElevatedButton(
             onPressed: () {
-              BlocProvider.of<AuthPageBloc>(context).add(AuthPageEvent.signUp(
+              BlocProvider.of<AutheficationBloc>(context)
+                  .add(AutheficationEvent.signUp(
                 email: _emailController.text,
                 password: _passwordController.text,
                 name: _nameController.text,
@@ -49,86 +132,6 @@ class SignUpScreen extends StatelessWidget {
               ));
             },
             child: const Text("Sign up"),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text("Already have account?"),
-              TextButton(
-                onPressed: () {
-                  BlocProvider.of<AuthPageBloc>(context)
-                      .add(AuthPageEvent.showSignInScreen());
-                  _emailController.clear();
-                  _fathernameController.clear();
-                  _nameController.clear();
-                  _passwordController.clear();
-                  _surnameController.clear();
-                },
-                child: Text("Sign In"),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class SignUpForm extends StatefulWidget {
-  const SignUpForm({
-    super.key,
-    required this.nameController,
-    required this.surnameController,
-    required this.fathernameController,
-    required this.emailController,
-    required this.passwordController,
-  });
-
-  final TextEditingController nameController;
-  final TextEditingController surnameController;
-  final TextEditingController fathernameController;
-  final TextEditingController emailController;
-  final TextEditingController passwordController;
-
-  @override
-  State<SignUpForm> createState() => _SignUpFormState();
-}
-
-class _SignUpFormState extends State<SignUpForm> {
-  @override
-  Widget build(BuildContext context) {
-    return Form(
-      child: Column(
-        children: [
-          const Text("Sign Up"),
-          TextInputWidget(
-            controller: widget.nameController,
-            label: "name",
-            obscureText: false,
-          ),
-          Padding(padding: EdgeInsets.only(top: 5)),
-          TextInputWidget(
-            controller: widget.surnameController,
-            label: "surname",
-            obscureText: false,
-          ),
-          Padding(padding: EdgeInsets.only(top: 5)),
-          TextInputWidget(
-            controller: widget.fathernameController,
-            label: "fathername",
-            obscureText: false,
-          ),
-          Padding(padding: EdgeInsets.only(top: 5)),
-          TextInputWidget(
-            controller: widget.emailController,
-            label: "email",
-            obscureText: false,
-          ),
-          Padding(padding: EdgeInsets.only(top: 5)),
-          TextInputWidget(
-            controller: widget.passwordController,
-            label: "password",
-            obscureText: true,
           ),
         ],
       ),

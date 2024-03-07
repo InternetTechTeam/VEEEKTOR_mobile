@@ -38,6 +38,7 @@ dependencies:
   flutter_bloc:
   dio:
   shared_preferences:
+  jwt_decode:
 
 dev_dependencies:
   flutter_test:

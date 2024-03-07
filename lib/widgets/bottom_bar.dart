@@ -5,6 +5,10 @@ import 'package:veeektor/screens/screens.dart';
 class BottomBar extends StatefulWidget {
   const BottomBar({super.key});
 
+  static Route<dynamic> route() => MaterialPageRoute(
+        builder: (context) => const BottomBar(),
+      );
+
   @override
   State<BottomBar> createState() => _BottomBarState();
 }

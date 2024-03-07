@@ -1,103 +1,119 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:veeektor/application/bloc/auth_page_bloc/auth_page_bloc.dart';
+import 'package:veeektor/application/bloc/authefication_bloc/authefication_bloc.dart';
+import 'package:veeektor/application/models/progress_dialog.dart';
+import 'package:veeektor/screens/auth/sign_up_screen.dart';
 import 'package:veeektor/widgets/text_input_widget.dart';
 
 class SignInScreen extends StatelessWidget {
-  late final TextEditingController _emailController;
-  late final _passwordController;
-  late final _globalKey;
-  late final SignInForm _form;
-  SignInScreen({super.key}) {
-    _emailController = TextEditingController();
-    _passwordController = TextEditingController();
-    _globalKey = GlobalKey<FormState>();
-    _form = SignInForm(
-      emailController: _emailController,
-      passwordController: _passwordController,
-      globalKey: _globalKey,
-    );
-  }
+  const SignInScreen({super.key});
+
+  static Route<dynamic> route() => MaterialPageRoute(
+        builder: (context) => const SignInScreen(),
+      );
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _form,
-          TextButton(
-            onPressed: () {},
-            child: Text("Forgot password"),
-          ),
-          Center(
-            child: ElevatedButton(
-              onPressed: () {
-                BlocProvider.of<AuthPageBloc>(context).add(AuthPageEvent.signIn(
-                  email: _emailController.text,
-                  password: _passwordController.text,
-                ));
-              },
-              child: Text("Sign In"),
-            ),
-          ),
-          Row(
+    return Scaffold(
+      body: BlocListener<AutheficationBloc, AutheficationState>(
+        listenWhen: (previous, current) => previous.status != current.status,
+        listener: (context, state) {
+          switch (state.status) {
+            case AutheficationStatus.loading:
+              LoadingIndicatorDialog.show(context);
+              break;
+            case AutheficationStatus.error:
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content:
+                      Text(state.errorMessage ?? "something going wrong..."),
+                ),
+              );
+              break;
+            default:
+              break;
+          }
+        },
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text("New to VEEEKTOR?"),
+              SignInForm(),
               TextButton(
-                onPressed: () {
-                  BlocProvider.of<AuthPageBloc>(context)
-                      .add(AuthPageEvent.showSignUpScreen());
-                  _emailController.clear();
-                  _passwordController.clear();
-                },
-                child: Text("Create account"),
+                onPressed: () {},
+                child: Text("Forgot password"),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text("New to VEEEKTOR?"),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pushAndRemoveUntil(
+                          SignUpScreen.route(), (route) => false);
+                    },
+                    child: Text("Create account"),
+                  ),
+                ],
               ),
             ],
           ),
-        ],
+        ),
       ),
     );
   }
 }
 
 class SignInForm extends StatefulWidget {
-  late final TextEditingController emailController;
-  final passwordController;
-  final globalKey;
-
-  SignInForm({
-    super.key,
-    required this.emailController,
-    required this.passwordController,
-    required this.globalKey,
-  });
+  const SignInForm({super.key});
 
   @override
   State<SignInForm> createState() => _SignInFormState();
 }
 
 class _SignInFormState extends State<SignInForm> {
+  late final TextEditingController _emailController = TextEditingController();
+  late final TextEditingController _passwordController =
+      TextEditingController();
+  late final GlobalKey<FormState> _globalKey = GlobalKey<FormState>();
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Form(
-      key: widget.globalKey,
+      key: _globalKey,
       child: Column(
         children: [
           Text("Sign in"),
           TextInputWidget(
-            controller: widget.emailController,
+            controller: _emailController,
             label: "email",
             obscureText: false,
           ),
           Padding(padding: EdgeInsets.only(top: 5)),
           TextInputWidget(
-            controller: widget.passwordController,
+            controller: _passwordController,
             label: "Password",
             obscureText: true,
+          ),
+          ElevatedButton(
+            onPressed: () {
+              BlocProvider.of<AutheficationBloc>(context).add(
+                AutheficationEvent.signIn(
+                  login: _emailController.text,
+                  password: _passwordController.text,
+                ),
+              );
+            },
+            child: Text("Sign In"),
           ),
         ],
       ),
