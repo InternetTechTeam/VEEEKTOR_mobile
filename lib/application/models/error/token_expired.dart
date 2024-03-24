@@ -1,0 +1,3 @@
+class TokenExpiredException implements Exception {
+
+}

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:veeektor/application/bloc/authefication_bloc/authefication_bloc.dart';
+import 'package:veeektor/application/bloc/sign_in/sign_in_bloc.dart';
 import 'package:veeektor/application/models/progress_dialog.dart';
 import 'package:veeektor/screens/auth/sign_up_screen.dart';
 import 'package:veeektor/widgets/text_input_widget.dart';
@@ -15,14 +15,17 @@ class SignInScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: BlocListener<AutheficationBloc, AutheficationState>(
+      body: BlocListener<SignInBloc, SignInState>(
         listenWhen: (previous, current) => previous.status != current.status,
         listener: (context, state) {
+          if (state.status != SignInStatus.loading) {
+            LoadingIndicatorDialog.dismiss();
+          }
           switch (state.status) {
-            case AutheficationStatus.loading:
+            case SignInStatus.loading:
               LoadingIndicatorDialog.show(context);
               break;
-            case AutheficationStatus.error:
+            case SignInStatus.failure:
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content:
@@ -51,8 +54,8 @@ class SignInScreen extends StatelessWidget {
                   Text("New to VEEEKTOR?"),
                   TextButton(
                     onPressed: () {
-                      Navigator.of(context).pushAndRemoveUntil(
-                          SignUpScreen.route(), (route) => false);
+                      // Navigator.of(context).pushAndRemoveUntil(
+                      //     SignUpScreen.route(), (route) => false);
                     },
                     child: Text("Create account"),
                   ),
@@ -106,8 +109,8 @@ class _SignInFormState extends State<SignInForm> {
           ),
           ElevatedButton(
             onPressed: () {
-              BlocProvider.of<AutheficationBloc>(context).add(
-                AutheficationEvent.signIn(
+              BlocProvider.of<SignInBloc>(context).add(
+                SignInEvent(
                   login: _emailController.text,
                   password: _passwordController.text,
                 ),

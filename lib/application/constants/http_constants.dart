@@ -3,4 +3,5 @@ class HttpConstants {
   static const String signInURL = "users/signin";
   static const String signUpURL = "users/signup";
   static const String refreshURL = "auth/refresh";
+  static const String logoutURL = "auth/logout";
 }

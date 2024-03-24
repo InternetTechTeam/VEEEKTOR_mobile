@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:veeektor/application/bloc/authefication_bloc/authefication_bloc.dart';
+import 'package:veeektor/application/bloc/sign_in/sign_in_bloc.dart';
+import 'package:veeektor/application/bloc/sign_up/sign_up_bloc.dart';
 import 'package:veeektor/application/models/progress_dialog.dart';
 import 'package:veeektor/screens/auth/sign_in_screen.dart';
 import 'package:veeektor/widgets/text_input_widget.dart';
@@ -15,14 +16,14 @@ class SignUpScreen extends StatelessWidget {
   Widget build(BuildContext context) {
 
     return Scaffold(
-      body: BlocListener<AutheficationBloc, AutheficationState>(
+      body: BlocListener<SignUpBloc, SignUpState>(
         listenWhen: (previous, current) => previous.status != current.status,
         listener: (context, state) {
           switch (state.status) {
-            case AutheficationStatus.loading:
+            case SignInStatus.loading:
               LoadingIndicatorDialog.show(context);
               break;
-            case AutheficationStatus.error:
+            case SignInStatus.failure:
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content:
@@ -122,8 +123,8 @@ class _SignUpFormState extends State<SignUpForm> {
           ),
           ElevatedButton(
             onPressed: () {
-              BlocProvider.of<AutheficationBloc>(context)
-                  .add(AutheficationEvent.signUp(
+              BlocProvider.of<SignUpBloc>(context)
+                  .add(SignUpEvent(
                 email: _emailController.text,
                 password: _passwordController.text,
                 name: _nameController.text,
