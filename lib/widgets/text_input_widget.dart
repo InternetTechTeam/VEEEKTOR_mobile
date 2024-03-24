@@ -26,7 +26,7 @@ class _TextInputWidgetState extends State<TextInputWidget> {
         label: Text(widget.label),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(25),
-          borderSide: BorderSide(),
+          borderSide: const BorderSide(),
         ),
       ),
     );
