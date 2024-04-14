@@ -20,8 +20,11 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
       emit(state.copyWith(status: SignUpStatus.loading));
       LogResponse res = await _authService.signUp(signUpEvent: event);
       if (res.statusCode == 200) {
-        emit(state.copyWith(status: SignUpStatus.success));
-        _authBloc.add(AuthEvent.logged());
+        emit(state.copyWith(
+          status: SignUpStatus.success,
+          login: event.email,
+          password: event.password,
+        ));
       } else {
         emit(state.copyWith(
           status: SignUpStatus.failure,
