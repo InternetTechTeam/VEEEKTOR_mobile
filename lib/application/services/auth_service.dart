@@ -128,10 +128,11 @@ class AuthService {
   Future logout() async {
     final refreshToken =
         SharedPrefsRepository.get<String>(StorageKeys.refreshTokenKey);
+    print("logout func refreshToken: $refreshToken");
     var params = {
       "refresh_token": refreshToken,
     };
-
+    
     try {
       Response response = await _dio.post(
         path: HttpConstants.logoutURL,
@@ -142,6 +143,7 @@ class AuthService {
       print("delete access token is $res");
       await SharedPrefsRepository.remove(StorageKeys.refreshTokenKey);
     } catch (e) {
+      print("catch exception in func logout");
       print(e);
       return;
     }

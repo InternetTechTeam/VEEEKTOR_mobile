@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:veeektor/application/bloc/sign_in/sign_in_bloc.dart';
-import 'package:veeektor/application/models/progress_dialog.dart';
+import 'package:veeektor/widgets/progress_dialog.dart';
 import 'package:veeektor/screens/auth/sign_up_screen.dart';
 import 'package:veeektor/widgets/text_input_widget.dart';
 
@@ -54,8 +54,7 @@ class SignInScreen extends StatelessWidget {
                   Text("New to VEEEKTOR?"),
                   TextButton(
                     onPressed: () {
-                      // Navigator.of(context).pushAndRemoveUntil(
-                      //     SignUpScreen.route(), (route) => false);
+                      Navigator.of(context).push(SignUpScreen.route() );
                     },
                     child: Text("Create account"),
                   ),

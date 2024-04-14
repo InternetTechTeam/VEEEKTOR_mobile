@@ -28,19 +28,26 @@ class DioRepository {
   }) async {
     try {
       final defaultHeaders = await getEssentialHeaders();
-
       defaultHeaders.addAll(headers ?? {});
 
+      print(defaultHeaders);
       Response response = await _dio.post(
         path,
         options: Options(headers: defaultHeaders),
         data: json.encode(body),
       );
-      response.data = json.decode(response.data);
-
-      print(response.data);
+      print("add response");
+      if (response.data != "") {
+        response.data = json.decode(response.data);
+      }
+      if (response.data == null) {
+        print("response is empty");
+      } else {
+        print(response.data);
+      }
       return response;
     } catch (e) {
+      print("catch exeption in post func");
       print(e);
       rethrow;
     }
@@ -50,13 +57,11 @@ class DioRepository {
     print("refreshJWT func is called");
     final accessToken =
         SharedPrefsRepository.get<String>(StorageKeys.accessTokenKey);
-    print("access token is $accessToken");
     if (accessToken == null) {
       return null;
     }
     final refreshToken =
         SharedPrefsRepository.get<String>(StorageKeys.refreshTokenKey);
-    print("refresh token is $refreshToken");
     if (!Jwt.isExpired(accessToken)) {
       return accessToken;
     }
@@ -69,14 +74,14 @@ class DioRepository {
         HttpConstants.refreshURL,
         data: json.encode(params),
       );
-
+      print("smth of refreshJWT");
       response.data = json.decode(response.data);
-      print("response: ${response.data}");
       SharedPrefsRepository.setString(
           StorageKeys.refreshTokenKey, response.data["refresh_token"]);
       SharedPrefsRepository.setString(
           StorageKeys.accessTokenKey, response.data["access_token"]);
 
+      print("refresh JWT is ending");
       return response.data["access_token"];
     } on DioException catch (e) {
       switch (e.response?.statusCode) {
@@ -90,6 +95,7 @@ class DioRepository {
       }
       return null;
     } catch (e) {
+      print("catch error in func refresh JWT");
       rethrow;
     }
   }
@@ -105,11 +111,12 @@ class DioRepository {
       if (accessToken == null) {
         throw TokenExpiredException;
       }
-
+      print("I'll added a headers");
       return {
         "Authorization": "Bearer $accessToken",
       };
     } catch (e) {
+      print("catch exception in func getEssentialHeaders");
       rethrow;
     }
   }
