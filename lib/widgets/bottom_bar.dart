@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:veeektor/screens/account_screen.dart';
-import 'package:veeektor/screens/screens.dart';
+import 'package:veeektor/screens/home_screen.dart';
 
 class BottomBar extends StatefulWidget {
-  const BottomBar({super.key});
-
   static Route<dynamic> route() => MaterialPageRoute(
         builder: (context) => const BottomBar(),
       );
+
+  const BottomBar({super.key});
 
   @override
   State<BottomBar> createState() => _BottomBarState();
@@ -16,8 +16,8 @@ class BottomBar extends StatefulWidget {
 class _BottomBarState extends State<BottomBar> {
   int _currIdx = 0;
   static final _pages = [
-    const HomeScreen(),
-    const AccountScreen(),
+    HomeScreen(),
+    AccoutScreen(),
   ];
 
   void _onTap(idx) {
