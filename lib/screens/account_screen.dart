@@ -1,18 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:veeektor/application/bloc/auth/auth_bloc.dart';
+import 'package:veeektor/application/bloc/user_bloc/user_bloc.dart';
 
-class AccountScreen extends StatelessWidget {
-  const AccountScreen({super.key});
+class AccoutScreen extends StatelessWidget {
+  const AccoutScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: ElevatedButton(
-          onPressed: () => BlocProvider.of<AuthBloc>(context).add(AuthEvent.logout()),
-          child: Text("log out"),
-        ),
+      appBar: AppBar(
+        title: Text("Аккаунт"),
+      ),
+      body: BlocBuilder<UserBloc, UserState>(
+        builder: (context, state) {
+          return Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text(state.user!.email ?? "Втф пусто"),
+              TextButton(onPressed: () {
+                BlocProvider.of<UserBloc>(context).add(UserEvent.logout());
+              }, child: Text("Logout")),
+            ],
+          );
+        },
       ),
     );
   }

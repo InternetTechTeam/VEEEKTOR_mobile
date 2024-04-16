@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:veeektor/application/bloc/sign_in/sign_in_bloc.dart';
-import 'package:veeektor/widgets/progress_dialog.dart';
-import 'package:veeektor/screens/auth/sign_up_screen.dart';
+import 'package:veeektor/application/bloc/auth_page_bloc/auth_page_bloc.dart';
+import 'package:veeektor/application/bloc/user_bloc/user_bloc.dart';
+import 'package:veeektor/application/repository/api/api_repository.dart';
+import 'package:veeektor/application/repository/api/token_repository.dart';
+import 'package:veeektor/application/service/auth_service.dart';
+import 'package:veeektor/model/auth_form_model.dart';
+import 'package:veeektor/model/status.dart';
+import 'package:veeektor/widgets/loading_indicator_dialog.dart';
 import 'package:veeektor/widgets/text_input_widget.dart';
 
 class SignInScreen extends StatelessWidget {
@@ -14,53 +19,67 @@ class SignInScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: BlocListener<SignInBloc, SignInState>(
-        listenWhen: (previous, current) => previous.status != current.status,
-        listener: (context, state) {
-          if (state.status != SignInStatus.loading) {
-            LoadingIndicatorDialog.dismiss();
-          }
-          switch (state.status) {
-            case SignInStatus.loading:
-              LoadingIndicatorDialog.show(context);
-              break;
-            case SignInStatus.failure:
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content:
-                      Text(state.errorMessage ?? "something going wrong..."),
-                ),
-              );
-              break;
-            default:
-              break;
-          }
-        },
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SignInForm(),
-              TextButton(
-                onPressed: () {},
-                child: Text("Forgot password"),
-              ),
-              Row(
+    return RepositoryProvider(
+      create: (context) => AuthService(
+        apiRepository: RepositoryProvider.of<ApiRepository>(context),
+        tokenRepository: RepositoryProvider.of<TokenRepository>(context),
+      ),
+      child: BlocProvider(
+        create: (context) => AuthPageBloc(
+          authService: RepositoryProvider.of<AuthService>(context),
+        ),
+        child: BlocListener<AuthPageBloc, AuthPageState>(
+          listenWhen: (previous, current) {
+            return previous.status != current.status;
+          },
+          listener: (context, state) {
+            if (state.status != Status.loading) {
+              LoadingIndicatorDialog.dismiss();
+            }
+            switch (state.status) {
+              case Status.success:
+                BlocProvider.of<UserBloc>(context).add(UserEvent.logged());
+                break;
+              case Status.failure:
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(state.errorMessage ??
+                        "Непредвиденная ошибка... (стандартный вывод ScaffoldMessenger)"),
+                  ),
+                );
+                break;
+              case Status.loading:
+                LoadingIndicatorDialog.show(context);
+                break;
+              default:
+                break;
+            }
+          },
+          child: Scaffold(
+            body: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("New to VEEEKTOR?"),
+                  SignInForm(),
                   TextButton(
-                    onPressed: () {
-                      Navigator.of(context).push(SignUpScreen.route() );
-                    },
-                    child: Text("Create account"),
+                    onPressed: () {},
+                    child: Text("Forgot password"),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text("New to VEEEKTOR?"),
+                      TextButton(
+                        onPressed: () {},
+                        child: Text("Create account"),
+                      ),
+                    ],
                   ),
                 ],
               ),
-            ],
+            ),
           ),
         ),
       ),
@@ -108,10 +127,11 @@ class _SignInFormState extends State<SignInForm> {
           ),
           ElevatedButton(
             onPressed: () {
-              BlocProvider.of<SignInBloc>(context).add(
-                SignInEvent(
-                  login: _emailController.text,
-                  password: _passwordController.text,
+              BlocProvider.of<AuthPageBloc>(context).add(
+                AuthPageEvent.signIn(
+                  form: SignInFormModel(
+                      email: _emailController.text,
+                      password: _passwordController.text),
                 ),
               );
             },

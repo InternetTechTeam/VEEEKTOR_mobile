@@ -1,50 +1,40 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:veeektor/application/bloc/auth/auth_bloc.dart';
-import 'package:veeektor/application/bloc/sign_in/sign_in_bloc.dart';
-import 'package:veeektor/application/bloc/sign_up/sign_up_bloc.dart';
-import 'package:veeektor/application/constants/storage_keys.dart';
-import 'package:veeektor/application/repository/dio_repository.dart';
-import 'package:veeektor/application/repository/shared_prefs_repository.dart';
-import 'package:veeektor/application/services/auth_service.dart';
+import 'package:veeektor/application/bloc/user_bloc/user_bloc.dart';
+import 'package:veeektor/application/repository/api/api_repository.dart';
+import 'package:veeektor/application/repository/api/token_repository.dart';
+import 'package:veeektor/application/service/user_service.dart';
 import 'package:veeektor/screens/auth/sign_in_screen.dart';
 import 'package:veeektor/screens/splash_screen.dart';
 import 'package:veeektor/theme.dart';
 import 'package:veeektor/widgets/bottom_bar.dart';
 
 void main() async {
-  print("app started!");
   WidgetsFlutterBinding.ensureInitialized();
-  await SharedPrefsRepository.init();
+  await TokenRepository.init();
   runApp(
     MultiRepositoryProvider(
       providers: [
         RepositoryProvider(
-          create: (context) => DioRepository(),
+          create: (context) => TokenRepository(),
         ),
-        RepositoryProvider<AuthService>(
-          create: (context) => AuthService(
-            dioRepository: RepositoryProvider.of<DioRepository>(context),
+        RepositoryProvider(
+          create: (context) => ApiRepository(),
+        ),
+        RepositoryProvider(
+          create: (context) => UserService(
+            apiRepository: RepositoryProvider.of<ApiRepository>(context),
           ),
-        ),
+        )
       ],
       child: MultiBlocProvider(
         providers: [
-          BlocProvider<AuthBloc>(
-            create: (context) => AuthBloc(
-              authService: RepositoryProvider.of<AuthService>(context),
-            )..add(AuthEvent.init()),
-          ),
           BlocProvider(
-            create: (context) => SignInBloc(
-              authBloc: BlocProvider.of<AuthBloc>(context),
-              authService: RepositoryProvider.of<AuthService>(context),
-            ),
-          ),
-          BlocProvider(
-            create: (context) => SignUpBloc(
-                authService: RepositoryProvider.of<AuthService>(context),
-                authBloc: BlocProvider.of<AuthBloc>(context)),
+            create: (context) => UserBloc(
+                userService: RepositoryProvider.of<UserService>(context),
+                tokenRepository:
+                    RepositoryProvider.of<TokenRepository>(context))
+              ..add(UserEvent.runApp()),
           ),
         ],
         child: App(),
@@ -56,24 +46,23 @@ void main() async {
 class App extends StatelessWidget {
   final GlobalKey<NavigatorState> _navigatorKey = GlobalKey<NavigatorState>();
   App({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'VEEEKTOR',
+      title: 'Flutter Demo',
       theme: appTheme,
       navigatorKey: _navigatorKey,
       builder: (context, _) {
-        return BlocListener<AuthBloc, AuthState>(
+        return BlocListener<UserBloc, UserState>(
           listenWhen: (previous, current) => previous.status != current.status,
           listener: (context, state) {
             switch (state.status) {
-              case AuthStatus.autheficated:
-                print(
-                    "usert autheficated, token is ${SharedPrefsRepository.get<String>(StorageKeys.accessTokenKey)}");
+              case UserStatus.logged:
                 _navigatorKey.currentState!
                     .pushAndRemoveUntil(BottomBar.route(), (route) => false);
                 break;
-              case AuthStatus.notAutheficated:
+              case UserStatus.notLogged:
                 _navigatorKey.currentState!
                     .pushAndRemoveUntil(SignInScreen.route(), (route) => false);
                 break;
