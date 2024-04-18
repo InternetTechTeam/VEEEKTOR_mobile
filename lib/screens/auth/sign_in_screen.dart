@@ -7,6 +7,7 @@ import 'package:veeektor/application/repository/api/token_repository.dart';
 import 'package:veeektor/application/service/auth_service.dart';
 import 'package:veeektor/model/auth_form_model.dart';
 import 'package:veeektor/model/status.dart';
+import 'package:veeektor/screens/auth/sign_up/sign_up_screen.dart';
 import 'package:veeektor/widgets/loading_indicator_dialog.dart';
 import 'package:veeektor/widgets/text_input_widget.dart';
 
@@ -72,7 +73,9 @@ class SignInScreen extends StatelessWidget {
                     children: [
                       Text("New to VEEEKTOR?"),
                       TextButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.push(context, SignUpScreen.route());
+                        },
                         child: Text("Create account"),
                       ),
                     ],

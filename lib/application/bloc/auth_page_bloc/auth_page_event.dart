@@ -3,7 +3,10 @@ part of 'auth_page_bloc.dart';
 class AuthPageEvent {
   AuthPageEvent();
 
-  factory AuthPageEvent.signIn({required SignInFormModel form}) => _SignInEvent(form: form);
+  factory AuthPageEvent.signIn({required SignInFormModel form}) =>
+      _SignInEvent(form: form);
+  factory AuthPageEvent.signUp({required SignUpFormModel form}) =>
+      _SignUpEvent(form: form);
 }
 
 class _SignInEvent extends AuthPageEvent {
