@@ -3,6 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:veeektor/application/bloc/user_bloc/user_bloc.dart';
 import 'package:veeektor/application/repository/api/api_repository.dart';
 import 'package:veeektor/application/repository/api/token_repository.dart';
+import 'package:veeektor/application/service/auth_service.dart';
+import 'package:veeektor/application/service/department_service.dart';
+import 'package:veeektor/application/service/educational_envs_service.dart';
 import 'package:veeektor/application/service/user_service.dart';
 import 'package:veeektor/screens/auth/sign_in_screen.dart';
 import 'package:veeektor/screens/splash_screen.dart';
@@ -19,13 +22,25 @@ void main() async {
           create: (context) => TokenRepository(),
         ),
         RepositoryProvider(
-          create: (context) => ApiRepository(),
+          create: (context) => ApiRepository(
+            tokenRepository: RepositoryProvider.of<TokenRepository>(context),
+          ),
         ),
         RepositoryProvider(
           create: (context) => UserService(
             apiRepository: RepositoryProvider.of<ApiRepository>(context),
           ),
-        )
+        ),
+        RepositoryProvider(
+          create: (context) => DepartmentService(
+            apiRepository: RepositoryProvider.of<ApiRepository>(context),
+          ),
+        ),
+        RepositoryProvider(
+          create: (context) => EducationalEnvsService(
+            apiRepository: RepositoryProvider.of<ApiRepository>(context),
+          ),
+        ),
       ],
       child: MultiBlocProvider(
         providers: [
