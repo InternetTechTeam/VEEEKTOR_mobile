@@ -6,9 +6,11 @@ import 'package:veeektor/application/repository/api/token_repository.dart';
 
 class Middleware extends Interceptor {
   final Dio _dio;
-  final TokenRepository _tokenRepository = TokenRepository();
+  final TokenRepository _tokenRepository;
 
-  Middleware({required Dio dio}) : _dio = dio;
+  Middleware({required Dio dio, required TokenRepository tokenRepository})
+      : _dio = dio,
+        _tokenRepository = tokenRepository;
 
   Future<bool> _refreshToken() async {
     String? refresh = _tokenRepository.getRefreshToken();

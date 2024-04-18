@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:veeektor/application/bloc/auth_page_bloc/auth_page_bloc.dart';
+import 'package:veeektor/application/bloc/sign_in_page_bloc/sign_in_page_bloc.dart';
 import 'package:veeektor/application/bloc/user_bloc/user_bloc.dart';
 import 'package:veeektor/application/repository/api/api_repository.dart';
-import 'package:veeektor/application/repository/api/token_repository.dart';
 import 'package:veeektor/application/service/auth_service.dart';
 import 'package:veeektor/model/auth_form_model.dart';
 import 'package:veeektor/model/status.dart';
@@ -23,13 +22,12 @@ class SignInScreen extends StatelessWidget {
     return RepositoryProvider(
       create: (context) => AuthService(
         apiRepository: RepositoryProvider.of<ApiRepository>(context),
-        tokenRepository: RepositoryProvider.of<TokenRepository>(context),
       ),
       child: BlocProvider(
-        create: (context) => AuthPageBloc(
+        create: (context) => SignInPageBloc(
           authService: RepositoryProvider.of<AuthService>(context),
         ),
-        child: BlocListener<AuthPageBloc, AuthPageState>(
+        child: BlocListener<SignInPageBloc, SignInPageState>(
           listenWhen: (previous, current) {
             return previous.status != current.status;
           },
@@ -130,8 +128,8 @@ class _SignInFormState extends State<SignInForm> {
           ),
           ElevatedButton(
             onPressed: () {
-              BlocProvider.of<AuthPageBloc>(context).add(
-                AuthPageEvent.signIn(
+              BlocProvider.of<SignInPageBloc>(context).add(
+                SignInPageEvent.signIn(
                   form: SignInFormModel(
                       email: _emailController.text,
                       password: _passwordController.text),

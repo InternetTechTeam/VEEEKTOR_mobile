@@ -3,21 +3,13 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:veeektor/application/constants/http_backpoints.dart';
 import 'package:veeektor/application/repository/api/api_repository.dart';
-import 'package:veeektor/application/repository/api/token_repository.dart';
 import 'package:veeektor/model/auth_form_model.dart';
-import 'package:veeektor/model/educational_eviroment.dart';
 import 'package:veeektor/model/response/log_response.dart';
-import 'package:veeektor/model/response/response.dart';
 
 class AuthService {
   final ApiRepository _api;
-  final TokenRepository _tokenRepository;
 
-  AuthService(
-      {required ApiRepository apiRepository,
-      required TokenRepository tokenRepository})
-      : _api = apiRepository,
-        _tokenRepository = tokenRepository;
+  AuthService({required ApiRepository apiRepository}) : _api = apiRepository;
 
   Future<LogResponse> signIn(IAuthFormModel authForm) async {
     var params = authForm.toJson();
@@ -28,7 +20,7 @@ class AuthService {
 
       response.data = json.decode(response.data);
 
-      bool saved = await _tokenRepository.saveTokensInStorage(
+      bool saved = await _api.tokenRepository.saveTokensInStorage(
         access: response.data["access_token"],
         refresh: response.data["refresh_token"],
       );

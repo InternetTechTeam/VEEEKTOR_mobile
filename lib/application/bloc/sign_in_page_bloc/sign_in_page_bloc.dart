@@ -6,20 +6,20 @@ import 'package:veeektor/model/response/log_response.dart';
 import 'package:veeektor/model/response/response.dart';
 import 'package:veeektor/model/status.dart';
 
-part 'auth_page_event.dart';
-part 'auth_page_state.dart';
+part 'sign_in_page_event.dart';
+part 'sign_in_page_state.dart';
 
-class AuthPageBloc extends Bloc<AuthPageEvent, AuthPageState> {
+class SignInPageBloc extends Bloc<SignInPageEvent, SignInPageState> {
   final AuthService _authService;
 
-  AuthPageBloc({required AuthService authService})
+  SignInPageBloc({required AuthService authService})
       : _authService = authService,
-        super(AuthPageState.initial()) {
+        super(SignInPageState.initial()) {
     on<_SignInEvent>(_signIn);
     on<_SignUpEvent>(_signUp);
   }
 
-  _signIn(_SignInEvent event, Emitter<AuthPageState> emit) async {
+  _signIn(_SignInEvent event, Emitter<SignInPageState> emit) async {
     emit(state.copyWith(status: Status.loading));
 
     LogResponse res = await _authService.signIn(event.form);
@@ -31,7 +31,7 @@ class AuthPageBloc extends Bloc<AuthPageEvent, AuthPageState> {
     }
   }
 
-  _signUp(_SignUpEvent event, Emitter<AuthPageState> emit) async {
+  _signUp(_SignUpEvent event, Emitter<SignInPageState> emit) async {
     emit(state.copyWith(status: Status.loading));
     LogResponse response = await _authService.signUp(event.form);
     if (response.statusCode == 200) {
