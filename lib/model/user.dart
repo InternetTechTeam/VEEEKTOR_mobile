@@ -1,6 +1,8 @@
+import 'package:veeektor/model/role.dart';
+
 class User {
   int id;
-  int roleId;
+  Role role;
   int depId;
   String email;
   String name;
@@ -9,7 +11,7 @@ class User {
 
   User({
     required this.id,
-    required this.roleId,
+    required this.role,
     required this.depId,
     required this.email,
     required this.name,
@@ -19,7 +21,7 @@ class User {
 
   factory User.fromJson(Map<String, dynamic> json) => User(
         id: json["id"] as int,
-        roleId: json["role_id"] as int,
+        role: Role(id: json["role_id"] as int),
         depId: json["dep_id"] as int,
         email: json["email"] as String,
         name: json["name"] as String,

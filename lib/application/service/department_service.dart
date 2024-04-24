@@ -42,4 +42,16 @@ class DepartmentService {
       return MyResponse.withError(statusCode: 0, errorMessage: message);
     }
   }
+
+  Future<MyResponse> getDepartmentById({required int id}) async {
+    Response response;
+    try {
+      response = await _api.dio.get("${HttpBackpoints.getDepartmentById}$id");
+      response.data = json.decode(response.data);
+
+      return MyResponse(statusCode: 200, body: DepartmentModel.fromJson(response.data));
+    } on DioException catch (error) {
+      return MyResponse.withError(statusCode: error.response!.statusCode!, errorMessage: error.message);
+    }
+  }
 }
