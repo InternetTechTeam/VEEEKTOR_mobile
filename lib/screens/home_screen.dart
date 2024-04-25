@@ -4,7 +4,7 @@ import 'package:veeektor/application/bloc/home_screen_bloc/home_screen_bloc.dart
 import 'package:veeektor/application/repository/api/api_repository.dart';
 import 'package:veeektor/application/service/courses_service.dart';
 import 'package:veeektor/model/status.dart';
-import 'package:veeektor/screens/course_screen.dart';
+import 'package:veeektor/screens/course/course_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -40,7 +40,7 @@ class HomeScreen extends StatelessWidget {
                         containedInkWell: true,
                         child: Text(state.courses![index].name),
                         onTap: () {
-                          Navigator.push(context, CourseScreen.route());
+                          Navigator.push(context, CourseScreen.route(state.courses![index]));
                         },
                       );
                     },

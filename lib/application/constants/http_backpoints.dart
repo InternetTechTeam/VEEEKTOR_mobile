@@ -10,9 +10,11 @@ class HttpBackpoints {
   static const String getDepartmentsByEnvIdUrl = "departments?env_id=";
   static const String getDepartmentById = "departments?id=";
   static const String getEducationalEnvById = "educational_envs?id=";
+  static const String getCourseByIdUrl = "courses?id=";
 
   static const List<String> needToken = [
     userUrl,
     getUserCourcesUrl,
+    getCourseByIdUrl,
   ];
 }
