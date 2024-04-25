@@ -35,4 +35,22 @@ class CoursesService {
       }
     }
   }
+
+  Future<MyResponse> getCourseById({required int id}) async {
+    Response response;
+    print("${HttpBackpoints.getCourseByIdUrl}$id");
+    try {
+      response = await _api.dio.get("${HttpBackpoints.getCourseByIdUrl}$id",
+          options: Options(
+            headers: {
+              "needToken": true,
+            },
+          ));
+      response.data = json.decode(response.data);
+
+      return MyResponse(statusCode: response.statusCode!, body: response.data);
+    } catch (e) {
+      return MyResponse.withError(statusCode: 0, errorMessage: e.toString());
+    }
+  }
 }

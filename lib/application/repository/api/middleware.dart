@@ -47,10 +47,11 @@ class Middleware extends Interceptor {
   @override
   void onRequest(
       RequestOptions options, RequestInterceptorHandler handler) async {
-    if (!HttpBackpoints.needToken.contains(options.path)) {
+    if (!HttpBackpoints.needToken.contains(options.path) && !options.headers.containsKey("needToken")) {
       return super.onRequest(options, handler);
     }
 
+    options.headers.remove("needToken");
     if (_tokenRepository.isTokenExpired()) {
       try {
         bool result = await _refreshToken();
